@@ -1,0 +1,10 @@
+{
+  "name": "reddit_rss_wallpapers",
+  "url": "https://www.reddit.com/r/wallpapers/.rss",
+  "status": 429,
+  "content_type": "",
+  "kind": "http-429",
+  "error": "HTTPError: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/wallpapers/.rss",
+  "body_len": 0,
+  "body_head": ""
+}

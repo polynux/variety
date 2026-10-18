@@ -1,0 +1,10 @@
+{
+  "name": "reddit_old_json_wallpaper",
+  "url": "https://old.reddit.com/r/wallpaper.json?limit=5",
+  "status": 200,
+  "content_type": "text/html; charset=utf-8",
+  "kind": "html-block-or-login",
+  "error": null,
+  "body_len": 332469,
+  "body_head": "\n    <!DOCTYPE html>\n    <html lang=\"en-US\" class=\"theme-beta\" dir=\"ltr\" device=\"desktop\">\n      <head prefix=\"og: https://ogp.me/ns#\">\n        <title>Welcome to Reddit</title>\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">\n    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\">\n    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\">\n    <meta name=\"msapplication-navbutton-color\" content=\"#000000\">\n    <meta name=\"theme-color\" content=\"#000000\">\n        \n        \n        <meta name=\"description\" content=\"Log in or sign up t"
+}

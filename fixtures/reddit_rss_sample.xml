@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
+  <title>r/wallpaper</title>
+  <entry>
+    <title>Mountain sunset 1920x1080</title>
+    <link href="https://www.reddit.com/r/wallpaper/comments/abc123/mountain_sunset/"/>
+    <content type="html">&lt;a href="https://i.redd.it/abc123.jpg"&gt;image&lt;/a&gt;</content>
+    <media:thumbnail url="https://preview.redd.it/thumb1.jpg" />
+  </entry>
+  <entry>
+    <title>City night (imgur page, not direct)</title>
+    <link href="https://www.reddit.com/r/wallpaper/comments/def456/city_night/"/>
+    <content type="html">&lt;a href="https://imgur.com/def456"&gt;imgur page&lt;/a&gt;</content>
+  </entry>
+  <entry>
+    <title>NSFW test (should be skipped in safe mode)</title>
+    <link href="https://www.reddit.com/r/wallpaper/comments/ghi789/nsfw_test/"/>
+    <category term="nsfw" />
+    <content type="html">&lt;a href="https://i.redd.it/ghi789.png"&gt;image&lt;/a&gt;</content>
+  </entry>
+  <entry>
+    <title>Direct PNG</title>
+    <link href="https://www.reddit.com/r/wallpaper/comments/jkl012/direct_png/"/>
+    <content type="html">&lt;a href="https://i.redd.it/jkl012.png?width=1920&amp;height=1080"&gt;image&lt;/a&gt;</content>
+  </entry>
+</feed>
