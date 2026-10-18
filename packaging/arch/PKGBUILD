@@ -1,0 +1,33 @@
+# Maintainer: polynux <polynux@local>
+# Fork of Arch extra/variety with Reddit RSS fallback + cookie/token auth.
+# Upstream PKGBUILD: https://gitlab.archlinux.org/archlinux/packaging/packages/variety/-/blob/main/PKGBUILD
+
+pkgname=variety-fork
+pkgver=0.9.2
+pkgrel=1
+pkgdesc='Changes the wallpaper on a regular interval (fork: Reddit RSS fallback + auth, Hyprland fixes).'
+arch=('any')
+url="https://github.com/polynux/variety"
+license=('GPL-3.0-only')
+provides=('variety')
+conflicts=('variety')
+depends=('gtk3' 'imagemagick' 'libgexiv2' 'libnotify' 'python-beautifulsoup4' 'python-cairo'
+         'python-configobj' 'dbus-python' 'python-gobject' 'python-httplib2' 'python-pillow'
+         'python-lxml' 'python-pycurl' 'python-requests' 'python-packaging')
+makedepends=('git' 'python-build' 'python-installer' 'python-wheel' 'python-setuptools-gettext')
+optdepends=('xdg-user-dirs: set wallpaper for KDE Plasma'
+            'qt5-tools: set wallpaper for KDE Plasma')
+source=("git+https://github.com/polynux/variety.git#branch=feat/reddit-rss-fallback")
+sha256sums=('SKIP')
+
+build() {
+  cd "${srcdir}/variety"
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "${srcdir}/variety"
+
+  export XDG_RUNTIME_DIR="/tmp/${pkgname}"
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}
