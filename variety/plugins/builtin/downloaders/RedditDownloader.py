@@ -15,6 +15,7 @@
 ### END LICENSE
 
 import logging
+import os
 import random
 import re
 import urllib.parse
@@ -61,6 +62,63 @@ def is_blocked_response(status=None, content_type="", text=""):
 class RedditDownloader(DefaultDownloader):
     def __init__(self, source, url):
         DefaultDownloader.__init__(self, source=source, config=url)
+
+    @staticmethod
+    def _read_secret(env_value, env_file, default_file):
+        """Env string wins, else file content (stripped). Returns '' if missing."""
+        if env_value:
+            return env_value.strip()
+        path = env_file or default_file
+        if path:
+            try:
+                path = os.path.expanduser(path)
+                if os.path.exists(path):
+                    with open(path, encoding="utf-8") as f:
+                        return f.read().strip()
+            except Exception:
+                logger.exception(lambda: "Could not read Reddit secret file " + str(path))
+        return ""
+
+    @staticmethod
+    def get_auth_headers():
+        """Optional auth passthrough, no secrets committed.
+
+        - VARIETY_REDDIT_TOKEN / VARIETY_REDDIT_TOKEN_FILE (or ~/.config/variety/reddit_token):
+          OAuth Bearer token, sent as `Authorization: Bearer <token>`.
+        - VARIETY_REDDIT_COOKIE / VARIETY_REDDIT_COOKIE_FILE (or ~/.config/variety/reddit_cookie):
+          raw `Cookie:` header value exported from a logged-in browser.
+        - VARIETY_REDDIT_USER_AGENT: override UA (Reddit asks for unique/descriptive UA).
+        Returns dict suitable for Util.request(headers=...).
+        """
+        headers = {}
+        token = RedditDownloader._read_secret(
+            os.getenv("VARIETY_REDDIT_TOKEN"),
+            os.getenv("VARIETY_REDDIT_TOKEN_FILE"),
+            "~/.config/variety/reddit_token",
+        )
+        if token:
+            headers["Authorization"] = "Bearer " + token
+        cookie = RedditDownloader._read_secret(
+            os.getenv("VARIETY_REDDIT_COOKIE"),
+            os.getenv("VARIETY_REDDIT_COOKIE_FILE"),
+            "~/.config/variety/reddit_cookie",
+        )
+        if cookie:
+            # allow "Cookie: a=b; c=d" or bare "a=b; c=d"
+            if cookie.lower().startswith("cookie:"):
+                cookie = cookie[len("cookie:") :].strip()
+            headers["Cookie"] = cookie
+        ua = os.getenv("VARIETY_REDDIT_USER_AGENT")
+        if ua and ua.strip():
+            headers["User-Agent"] = ua.strip()
+        return headers
+
+    @staticmethod
+    def maybe_oauth_url(url, headers):
+        """When a Bearer token is present, Reddit requires the oauth host."""
+        if "Authorization" in headers and "://www.reddit.com/" in url:
+            return url.replace("://www.reddit.com/", "://oauth.reddit.com/")
+        return url
 
     @staticmethod
     def build_json_url(url):
@@ -182,8 +240,10 @@ class RedditDownloader(DefaultDownloader):
     def fetch_rss_queue(self):
         rss_url = RedditDownloader.build_rss_url(self.config)
         logger.info(lambda: "Reddit RSS URL: " + rss_url)
+        headers = RedditDownloader.get_auth_headers()
+        rss_url = RedditDownloader.maybe_oauth_url(rss_url, headers)
         try:
-            content = Util.fetch_bytes(rss_url)
+            content = Util.fetch_bytes(rss_url, headers=headers or None)
         except Exception as e:
             resp = getattr(e, "response", None)
             status = resp.status_code if resp is not None else None
@@ -207,10 +267,12 @@ class RedditDownloader(DefaultDownloader):
     def fill_queue(self):
         logger.info(lambda: "Reddit URL: " + self.config)
 
-        # JSON-first
+        # JSON-first (with optional auth passthrough)
+        headers = RedditDownloader.get_auth_headers()
         json_url = RedditDownloader.build_json_url(self.config)
+        json_url = RedditDownloader.maybe_oauth_url(json_url, headers)
         try:
-            s = Util.fetch_json(json_url)
+            s = Util.fetch_json(json_url, headers=headers or None)
         except Exception as e:
             resp = getattr(e, "response", None)
             status = resp.status_code if resp is not None else None

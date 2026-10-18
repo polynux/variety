@@ -25,3 +25,10 @@ Result 2026-10-18:
 
 ## Conclusion
 Unauthenticated JSON is dead. Phase 2 needs RSS fallback + optional `Cookie`/`Bearer` passthrough.
+
+## Auth passthrough (task 2.2)
+- `RedditDownloader.get_auth_headers()` reads (no secrets in repo):
+  - `VARIETY_REDDIT_TOKEN` / `VARIETY_REDDIT_TOKEN_FILE` (default `~/.config/variety/reddit_token`) -> `Authorization: Bearer <token>`, auto-switches `www.reddit.com` -> `oauth.reddit.com`
+  - `VARIETY_REDDIT_COOKIE` / `VARIETY_REDDIT_COOKIE_FILE` (default `~/.config/variety/reddit_cookie`) -> `Cookie: ...`
+  - `VARIETY_REDDIT_USER_AGENT` overrides UA
+- `fill_queue()` = JSON-first with headers, fallback to RSS on 403/429/Blocked; `RedditSource.create_downloader()` unchanged (already returns `RedditDownloader`).
